@@ -22,8 +22,18 @@
 (function(global, $) {
     "use strict";
 
+    var INSTANCE_KEY = "autogrow-instance";
+
     var clearTimeout = global.clearTimeout,
+    
+        className = "autogrow-measure-"+("" + Math.random()).replace(/[^0-9]/g, ""),
+        
+        textAreaValHooks = $.valHooks.textarea,
+        
+        textAreaValSetter = textAreaValHooks && textAreaValHooks.set || $.noop,
+        
         slice = [].slice,
+        
         setTimeout = global.setTimeout;
 
     var boxSizingProp = (function(){
@@ -44,13 +54,16 @@
         height: 1,
         border: "none",
         overflow: "hidden",
-        position: "absolute"
+        position: "absolute",
+        mozBoxSizing: "content-box",
+        webkitBoxSizing: "content-box",
+        boxSizing: "Content-box"
     };
     
-    var fontProps = "fontWeight fontFamily fontStyle fontSize wordWrap lineHeight".split( " " );
+    var fontProps = "fontWeight fontFamily fontStyle fontSize wordWrap lineHeight wordSpacing letterSpacing textIndent textTransform".split( " " );
     
     function makeMeasurementElement() {
-        return $("<textarea>").css( measureBaseCss );
+        return $("<textarea>", {tabIndex: -1}).css( measureBaseCss ).addClass( className );
     }
     
     function numericCss( $elem, key ) {
@@ -177,21 +190,47 @@
         method.destroy = function() {
             this._measurement.remove();
             this._oninput.cancel();
-            this._elem.removeData( "autogrow-instance" );
+            this._elem.removeData( INSTANCE_KEY );
             this._elem.off( ".autogrow" );
         };
         
+        function valSetter( value ) {
+            this._elem[0].value = value;
+            this._oninput();
+        }
+        
+        function makeHookSetter( hookSetter, originalHookSetter ) {
+            return function( elem, value, name ) {
+                var data = $.data( elem, INSTANCE_KEY );
+                if( data ) {
+                    hookSetter.call( data, value );
+                    return true;
+                }
+                return originalHookSetter.call( this, elem, value, name );        
+            };
+        }
+
+        $.valHooks.textarea = $.extend( textAreaValHooks || {}, {
+            set: makeHookSetter( valSetter, textAreaValSetter )
+        });
+        
         return Autogrow;
     })();
+    
+
 
     $.fn.autogrow = function( option ) {
         return this.filter( "textarea" ).each( function() {
             
             var $this = $( this ),
-                data = $this.data( "autogrow-instance" );
-                
+                data = $this.data( INSTANCE_KEY );
+            
+            if( $this.hasClass( className ) ) {
+                return;
+            }
+            
             if( !data ) {
-                $this.data( "autogrow-instance", ( data = new Autogrow( this ) ) );
+                $this.data( INSTANCE_KEY, ( data = new Autogrow( this ) ) );
             }
             if( typeof option == 'string' && option.charAt(0) !== "_" && data[option].apply ) {
                 data[option].apply( data, arguments.length > 1 ? [].slice.call( arguments, 1 ) : [] );
@@ -205,5 +244,7 @@
         $( "textarea[data-autogrow]" ).autogrow();
     });
     
+
     
-})(this, jQuery);
+    
+})(this, this.jQuery);

@@ -44,6 +44,8 @@
                     <fieldset>
                     <legend>Write, paste or drop text into the textareas</legend>
                     </fieldset>
+                    
+                    
                     <div class="control-group">
                         <div class="span2">
                            <h4>No padding <small>3 rows</small></h4>
@@ -132,6 +134,31 @@
 <pre class="prettyprint">
 &lt;textarea placeholder="Write something here..." class="span3 scroll" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
 </pre>
+
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Initially hidden <small>3 rows</small></h4>
+                        </div>
+                        <div class="controls">
+                            <textarea style="display: none;" placeholder="Write something here..." class="span3" data-autogrow rows="3"></textarea>
+                            <span class="help-inline"><a onclick="$(this).closest('.controls').find('textarea').toggle(); $(this).text(this.text=='Show'?'Hide':'Show');return false;" href="#">Show</a></span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Markup</h4>
+                        </div>
+                        <div class="controls">
+<pre class="prettyprint">
+&lt;textarea style="display: none;" placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
+</pre>
+                        </div>
+                    </div>
                     
                     
                 </form>
