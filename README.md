@@ -1,5 +1,4 @@
-Textarea autogrow plugin for jQuery, automatically grows and shrinks textareas according to content size.
-
+Textarea autogrow plugin for jQuery, automatically grows and shrinks textareas according to content size. View [demo page](http://petkaantonov.github.io/jQuery-autogrow/).
 Minimal configuration jQuery plugin with data api.
 
 Usage
@@ -31,4 +30,4 @@ The mere presence of the attribute `data-autogrow` is enough for it to be picked
 **Note:** dynamically created elements need to be called manually with javascript, the data-api is only picked up once on DOM-ready event.
 
 
-See demo.html for better overview
+See [the demo page](http://petkaantonov.github.io/jQuery-autogrow/) for better overview
