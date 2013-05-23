@@ -1,0 +1,9 @@
+textarea {
+    border: none;
+    resize: none;
+    overflow: hidden;
+}
+
+textarea.scroll {
+    overflow-y: scroll;
+}

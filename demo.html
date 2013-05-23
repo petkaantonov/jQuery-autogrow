@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="./css/demo.css" rel="stylesheet">    
+    <style type="text/css">
+
+        body {
+            padding-top: 15px;
+        }
+        pre {
+            padding: 8px;
+            background-color: #F7F7F9;
+            border: 1px solid #E1E1E8;
+            margin-bottom: 18px;
+        }
+        
+        .hilite {
+            color: #FF8C00;
+        }
+        
+    </style>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/jQuery-autogrow.js"></script>
+ </head>
+ <body>
+    <div class="container">
+        <div class="row">
+            <div class="span12 well">
+                <h1>Autogrow demo page</h1>
+                <p>Demo page for jQuery autogrow plugin, includes examples of various ways to use the autogrow plugin.</p>
+                <br>
+                <p>See <a href="https://github.com/petkaantonov/jQuery-autogrow">project page</a> for documentation.</p>
+            </div>
+        </div>
+    
+        <div class="row">
+                
+            <div class="span12 well">
+                <form class="form-horizontal" autocomplete="off" spellcheck="false">
+                    <fieldset>
+                    <legend>Write, paste or drop text into the textareas</legend>
+                    </fieldset>
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>No padding <small>3 rows</small></h4>
+                        </div>
+                        <div class="controls">
+                            <textarea placeholder="Write something here..." class="span3" data-autogrow rows="3"></textarea>
+                            <span class="help-inline"></span>
+                        </div>
+                        
+
+                    </div>
+
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Markup</h4>
+                        </div>
+                        <div class="controls">
+<pre class="prettyprint">
+&lt;textarea placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
+</pre>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Heavy padding <small><br>3 rows</small></h4>
+                        </div>
+                        <div class="controls">
+                            <textarea placeholder="Write something here..." style="padding: 45px;" class="span3" data-autogrow rows="3"></textarea>
+                            <span class="help-inline"></span>
+                        </div>
+
+                    </div>
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Markup</h4>
+                        </div>
+                        <div class="controls">
+<pre class="prettyprint">
+&lt;textarea style="padding: 45px;" placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
+</pre>
+                        </div>
+                    </div>
+
+
+
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Medium padding, with border <small><br>3 rows</small></h4>
+                        </div>
+                        <div class="controls">
+                            <textarea placeholder="Write something here..." style="padding: 20px; border: 5px solid black; box-sizing: border-box;" class="span3" data-autogrow rows="3"></textarea>
+                            <span class="help-inline"></span>
+                        </div>
+
+                    </div>
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Markup</h4>
+                        </div>
+                        <div class="controls">
+<pre class="prettyprint">
+&lt;textarea style="padding: 20px; border: 5px solid black;" placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
+</pre>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Scrollbar <small>3 rows</small></h4>
+                        </div>
+                        <div class="controls">
+                            <textarea placeholder="Write something here..." class="span3 scroll" data-autogrow rows="3"></textarea>
+                            <span class="help-inline"></span>
+                        </div>
+                        
+
+                    </div>
+
+                    <div class="control-group">
+                        <div class="span2">
+                           <h4>Markup</h4>
+                        </div>
+                        <div class="controls">
+<pre class="prettyprint">
+&lt;textarea placeholder="Write something here..." class="span3 scroll" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
+</pre>
+                    
+                    
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+                
+            <div class="span12 well">
+                <h4>CSS <small>Bootstrap and </small></h4>
+<pre class="prettyprint">
+textarea {
+    border: none;
+    resize: none;
+    overflow: hidden;
+}
+
+textarea.scroll {
+    overflow-y: scroll;
+}
+</pre>
+            </div>
+            
+        </div>
+
+    </div>
+    
+ </body>
+</html>
