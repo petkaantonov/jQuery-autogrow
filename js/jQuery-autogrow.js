@@ -57,7 +57,7 @@
         position: "absolute",
         mozBoxSizing: "content-box",
         webkitBoxSizing: "content-box",
-        boxSizing: "Content-box"
+        boxSizing: "content-box"
     };
     
     var fontProps = "fontWeight fontFamily fontStyle fontSize wordWrap lineHeight wordSpacing letterSpacing textIndent textTransform".split( " " );
@@ -79,7 +79,7 @@
             return numericCss( $elem, "width" );
         }
         else {
-            return $elem.width()
+            return $elem[0].offsetWidth ? $elem.width() : 0;
         }
     }
     function getHeight( $elem ) {
@@ -87,7 +87,7 @@
             return numericCss( $elem, "height" );
         }
         else {
-            return $elem.height();
+            return $elem[0].offsetHeight ? $elem.height() : 0;
         }
     }
         
