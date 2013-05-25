@@ -21,20 +21,65 @@
  */
 (function(global, $) {
     "use strict";
-
+    
+    //TODO Commits and IE
+    //Require jQuery
+    //document destroy event
     var INSTANCE_KEY = "autogrow-instance";
 
-    var clearTimeout = global.clearTimeout,
-    
-        className = "autogrow-measure-"+("" + Math.random()).replace(/[^0-9]/g, ""),
-        
-        textAreaValHooks = $.valHooks.textarea,
-        
-        textAreaValSetter = textAreaValHooks && textAreaValHooks.set || $.noop,
-        
-        slice = [].slice,
-        
+    var clearTimeout = global.clearTimeout,    
+        className = "autogrow-measure-"+("" + Math.random()).replace(/[^0-9]/g, ""),        
+        slice = [].slice,        
         setTimeout = global.setTimeout;
+
+    var hook = (function(){
+        function defineHook( hookKind, hookKey, fnType, fn ) {
+            var hooks = $[hookKind],
+                hook = hooks[hookKey],
+                undef,
+                orig = null;
+
+            if( hook ) {
+                orig = hook[fnType]; 
+            }
+            else {
+                hook = hooks[hookKey] = {};
+            }
+
+            if( fnType === "set" ) {
+                hook[fnType] = function( elem, value, name ) {
+                    var ret;
+                    if( orig ) {
+                        ret = orig( elem, value, name );    
+                    }
+                    
+                    return fn( elem, value, name ) || ret;
+                };
+            }
+            else {
+                hook[fnType] = function( elem, name ) {
+                    var retOrig, ret;
+                    if( orig ) {
+                        retOrig = orig( elem, value );    
+                    }
+                    ret = fn( elem, value );
+                    return ret === null ? retOrig : ret;
+                };
+            }
+
+        }
+
+        return {
+            define: defineHook,
+
+            GETTER: "get",
+            SETTER: "set",
+
+            ATTR: "attrHooks",
+            PROP: "propHooks",
+            VAL: "valHooks"
+        };
+    })();
 
     var boxSizingProp = (function(){
         var props = ["boxSizing", "mozBoxSizing", "webkitBoxSizing"],
@@ -67,7 +112,7 @@
     }
     
     function numericCss( $elem, key ) {
-        return parseInt( $elem.css( key ), 10 );
+        return parseInt( $elem.css( key ), 10 ) || 0;
     }
     
     function isBorderBox( $elem ) {
@@ -100,7 +145,7 @@
     }
  
  
-    function throttle( fn, time, ctx ) {
+    function debounce( fn, time, ctx ) {
         var timerId = 0;
         var ret = function() {
             clearTimeout( timerId );
@@ -131,13 +176,15 @@
             
             this._refresh();
             
-            this._oninput = throttle( this._oninput, 13, this );
+            this._oninput = debounce( this._oninput, 13, this );
             this._elem.on(
-                "input.autogrow paste.autogrow " +
+                "cut.autogrow input.autogrow paste.autogrow " +
                 "mouseup.autogrow keydown.autogrow keyup.autogrow " +
                 "keypress.autogrow",
                 this._oninput
             );
+            
+            this._elem.on( "destroy.autogrow", $.proxy( this.destroy, this ) );
         }
         
         method._oninput = function() {
@@ -194,25 +241,17 @@
             this._elem.off( ".autogrow" );
         };
         
-        function valSetter( value ) {
-            this._elem[0].value = value;
+        var setter = function( elem, value ) {
+            var instance = $.data( elem, INSTANCE_KEY );
+            if( !instance ) {
+                return;
+            }
+            elem.value = value;
             this._oninput();
+            return true;
         }
         
-        function makeHookSetter( hookSetter, originalHookSetter ) {
-            return function( elem, value, name ) {
-                var data = $.data( elem, INSTANCE_KEY );
-                if( data ) {
-                    hookSetter.call( data, value );
-                    return true;
-                }
-                return originalHookSetter.call( this, elem, value, name );        
-            };
-        }
-
-        $.valHooks.textarea = $.extend( textAreaValHooks || {}, {
-            set: makeHookSetter( valSetter, textAreaValSetter )
-        });
+        hook.define( hook.VAL, "textarea", hook.SETTER, setter );
         
         return Autogrow;
     })();
@@ -238,11 +277,15 @@
         });
     };
 
+
+
     $.fn.autogrow.Constructor = Autogrow;
     
-    $( function() {
+    $.fn.autogrow.refresh = function() {
         $( "textarea[data-autogrow]" ).autogrow();
-    });
+    };
+    
+    $( $.fn.autogrow.refresh );
     
 
     

@@ -16,6 +16,12 @@ Destroy the autogrow enhancement from a textarea element. Needs to be called
 when you are about to remove the target textarea, otherwise memory will be leaked.
 
 	$("#comment-textarea").autogrow("destroy");
+
+You can also just trigger the event `"destroy"` on the target element
+
+	$("#comment-textarea").trigger("destroy")
+	
+This way you don't have to remember which plugins to destroy when you remove the element.
 	
 Markup/Data-API
 --------
@@ -27,7 +33,8 @@ You can use the autogrow plugin without extra javascript by specifying data attr
 	
 The mere presence of the attribute `data-autogrow` is enough for it to be picked up. There is no need to specify a value.
 
-**Note:** dynamically created elements need to be called manually with javascript, the data-api is only picked up once on DOM-ready event.
+**Note**: dynamically created elements need to be called manually with js. You may also call `$.fn.autogrow.refresh()` at any point to instantiate any
+uninitialized `data-autogrow` inputs. It is automatically called once on DOM ready event which makes the data API work.
 
 
 See [the demo page](http://petkaantonov.github.io/jQuery-autogrow/) for better overview
