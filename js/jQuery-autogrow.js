@@ -414,7 +414,7 @@
             }
             if( typeof option === "string" &&
                 option.charAt(0) !== "_" &&
-                data[option].apply ) {
+                typeof data[option] === "function" ) {
                 data[option].apply(
                     data,
                         arguments.length > 1
