@@ -129,7 +129,7 @@
             .css( measureBaseCss ).addClass( className );
     }
 
-    var getMeasurementElementFor = function() {
+    var getMeasurementElementFor = (function() {
         var cache = {};
 
         return function( $elem ) {
@@ -139,7 +139,7 @@
             }
             return cache[hash];
         };
-    }();
+    })();
 
     function numericCss( $elem, key ) {
         return parseInt( $elem.css( key ), 10 ) || 0;
