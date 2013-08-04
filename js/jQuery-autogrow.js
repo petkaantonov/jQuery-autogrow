@@ -26,6 +26,7 @@
     //TODO Commits and IE
     //Require jQuery
     //document destroy event
+    //figure out if same textarea can be used
     var INSTANCE_KEY = "autogrow-instance";
 
     var clearTimeout = global.clearTimeout,
@@ -112,10 +113,33 @@
         "lineHeight wordSpacing letterSpacing " +
         "textIndent textTransform".split( " " );
 
+
+
+    //If measurements would be same, don't create another textarea
+    function measurementHash( $elem ) {
+        var hash = "";
+        for( var i = 0, len = fontProps.length; i < len; ++i ) {
+            hash += $elem.css( fontProps[i] );
+        }
+        return hash;
+    }
+
     function makeMeasurementElement() {
         return $("<textarea>", {tabIndex: -1})
             .css( measureBaseCss ).addClass( className );
     }
+
+    var getMeasurementElementFor = function() {
+        var cache = {};
+
+        return function( $elem ) {
+            var hash = measurementHash( $elem );
+            if( !cache[hash] ) {
+                cache[hash] = makeMeasurementElement().appendTo("body");
+            }
+            return cache[hash];
+        };
+    }();
 
     function numericCss( $elem, key ) {
         return parseInt( $elem.css( key ), 10 ) || 0;
@@ -174,7 +198,7 @@
 
         function Autogrow( elem ) {
             this._elem = $(elem);
-            this._measurement = makeMeasurementElement().appendTo( "body" );
+            this._measurement = getMeasurementElementFor( this._elem );
             this._baseHeight = -1;
             this._lastHeight = getHeight( this._elem );
             this._additionalHeight = 0;
@@ -245,7 +269,7 @@
         };
 
         method.destroy = function() {
-            this._measurement.remove();
+            //TODO should remove measurement if it's unique
             this._oninput.cancel();
             this._elem.removeData( INSTANCE_KEY );
             this._elem.off( ".autogrow" );
