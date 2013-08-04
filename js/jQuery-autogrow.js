@@ -35,6 +35,7 @@
             .replace(/[^0-9]/g, ""),
 
         slice = [].slice,
+        hasProp = {}.hasOwnProperty,
         setTimeout = global.setTimeout;
 
     var hook = (function(){
@@ -106,40 +107,126 @@
         position: "absolute",
         mozBoxSizing: "content-box",
         webkitBoxSizing: "content-box",
-        boxSizing: "content-box"
+        boxSizing: "content-box",
+        pointerEvents: "none"
     };
 
-    var fontProps = "fontWeight fontFamily fontStyle fontSize wordWrap " +
+    var fontProps = ("fontWeight fontFamily fontStyle fontSize wordWrap " +
         "lineHeight wordSpacing letterSpacing " +
-        "textIndent textTransform".split( " " );
+        "textIndent textTransform").split( " " );
 
+    /**
+     * Used to determine whether a hidden measurement textarea
+     * is not used by any instance and can therefore be removed
+     */
+    var CachedTextarea = (function() {
+        var method = CachedTextarea.prototype;
 
-
-    //If measurements would be same, don't create another textarea
-    function measurementHash( $elem ) {
-        var hash = "";
-        for( var i = 0, len = fontProps.length; i < len; ++i ) {
-            hash += $elem.css( fontProps[i] );
+        function CachedTextarea() {
+            this.counter = 0;
+            this.textarea = $("<textarea>", {tabIndex: -1})
+                .css( measureBaseCss )
+                .addClass( className )
+                .appendTo( "body" );
         }
-        return hash;
-    }
 
-    function makeMeasurementElement() {
-        return $("<textarea>", {tabIndex: -1})
-            .css( measureBaseCss ).addClass( className );
-    }
-
-    var getMeasurementElementFor = (function() {
-        var cache = {};
-
-        return function( $elem ) {
-            var hash = measurementHash( $elem );
-            if( !cache[hash] ) {
-                cache[hash] = makeMeasurementElement().appendTo("body");
-            }
-            return cache[hash];
+        method.isUsedBy = function( elem ) {
+            return $( elem )
+                .data( INSTANCE_KEY )
+                ._measurement === this.textarea;
         };
+
+        method.isValid = function() {
+            return this.counter > 0;
+        };
+
+        method.useBy = function( elem ) {
+            if( this.isUsedBy( elem ) ) {
+                return;
+            }
+            this.counter++;
+            $( elem )
+                .data( INSTANCE_KEY )
+                ._measurement = this.textarea;
+        };
+
+        //Returns true if the cachedtextarea is not used by anything
+        //anymore
+        method.deuseBy = function( elem ) {
+            if( !this.isValid() ) {
+                return true;
+            }
+
+            if( !this.isUsedBy( elem ) ) {
+                return false;
+            }
+            this.counter--;
+
+            $( elem )
+                .data( INSTANCE_KEY )
+                ._measurement = null;
+
+            if( !this.isValid() ) {
+                this.textarea.remove();
+                this.textarea = null;
+                return true;
+            }
+            return false;
+        };
+
+        return CachedTextarea;
     })();
+
+    var measurementElement = {
+
+        cache: {},
+
+        //If measurements would be same, don't create another textarea
+        hashFor: function ( $elem ) {
+            var hash = "";
+            for( var i = 0, len = fontProps.length; i < len; ++i ) {
+                hash += $elem.css( fontProps[i] );
+            }
+            return hash;
+        },
+
+        applyTo: function( $elem ) {
+            var hash = this.hashFor( $elem ),
+                cache = this.cache;
+
+            var cachedTextarea = cache[hash];
+
+            if( !cachedTextarea || !cachedTextarea.isValid() ) {
+                cache[hash] = cachedTextarea = new CachedTextarea();
+            }
+            cachedTextarea.useBy( $elem[0] );
+        },
+
+        removeFrom: function( $elem ) {
+            var hash = this.hashFor( $elem ),
+                cache = this.cache;
+
+            var cachedTextarea = cache[hash];
+
+            //Font properties are not changed and element can be found
+            //by hash
+            if( cachedTextarea && cachedTextarea.isUsedBy( $elem[0] ) ) {
+                if( cachedTextarea.deuseBy( $elem[0] ) ) {
+                    delete cache[hash];
+                }
+            }
+            else {
+                for( var key in cache ) {
+                    if( hasProp.call( cache, key ) ) {
+                        cachedTextarea = cache[key];
+                        if( cachedTextarea.deuseBy( $elem[0] ) ) {
+                            delete cache[key];
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     function numericCss( $elem, key ) {
         return parseInt( $elem.css( key ), 10 ) || 0;
@@ -164,6 +251,18 @@
         else {
             return $elem[0].offsetHeight ? $elem.height() : 0;
         }
+    }
+
+    function getHeightWithoutText( $elem ) {
+        var elem = $elem[0];
+        var text = elem.value;
+        var height = elem.style.height;
+        elem.style.height = "";
+        elem.value = "";
+        var ret = getHeight( $elem );
+        elem.style.height = height;
+        elem.value = text;
+        return ret;
     }
 
     //Get the additional height for border-boxes
@@ -198,14 +297,10 @@
 
         function Autogrow( elem ) {
             this._elem = $(elem);
-            this._measurement = getMeasurementElementFor( this._elem );
+            this._measurement = null;
             this._baseHeight = -1;
-            this._lastHeight = getHeight( this._elem );
+            this._lastHeight = 0;
             this._additionalHeight = 0;
-
-
-            this._refresh();
-
             this._oninput = debounce( this._oninput, 13, this );
             this._elem.on(
                 "cut.autogrow input.autogrow paste.autogrow " +
@@ -218,9 +313,8 @@
         }
 
         method._oninput = function() {
-
             if( this._baseHeight <= 0 ) {
-                this._baseHeight = getHeight( this._elem );
+                this._baseHeight = getHeightWithoutText( this._elem );
                 if( isBorderBox( this._elem ) ) {
                     this._additionalHeight = getAdditionalHeight( this._elem );
                 }
@@ -251,6 +345,11 @@
 
 
         method._refresh = function() {
+            if( this._measurement != null ) {
+                measurementElement.removeFrom( this._elem );
+            }
+            measurementElement.applyTo( this._elem );
+
             for( var i = 0; i < fontProps.length; ++i ) {
                 this._measurement.css(
                     fontProps[i],
@@ -264,15 +363,22 @@
             else {
                 this._additionalHeight = 0;
             }
+            this._baseHeight = -1;
+            this._lastHeight = getHeight( this._elem );
+        };
 
-
+        //If font sizes or such are changed dynamically then this needs
+        //to be called by clients
+        method.refresh = function() {
+            this._refresh();
         };
 
         method.destroy = function() {
-            //TODO should remove measurement if it's unique
+            measurementElement.removeFrom( this._elem );
             this._oninput.cancel();
             this._elem.removeData( INSTANCE_KEY );
             this._elem.off( ".autogrow" );
+            this._elem = null;
         };
 
         var setter = function( elem, value ) {
@@ -304,6 +410,7 @@
 
             if( !data ) {
                 $this.data( INSTANCE_KEY, ( data = new Autogrow( this ) ) );
+                data.refresh();
             }
             if( typeof option === "string" &&
                 option.charAt(0) !== "_" &&
