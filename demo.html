@@ -15,6 +15,7 @@
             padding: 8px;
             background-color: #F7F7F9;
             border: 1px solid #E1E1E8;
+            margin-top: 0px;
             margin-bottom: 18px;
         }
         
@@ -29,147 +30,104 @@
  <body>
     <div class="container">
         <div class="row">
-            <div class="span12 well">
+            <div class="span12">
                 <h1>Autogrow demo page</h1>
                 <p>Demo page for jQuery autogrow plugin, includes examples of various ways to use the autogrow plugin.</p>
                 <br>
                 <p>See <a href="https://github.com/petkaantonov/jQuery-autogrow">project page</a> for documentation.</p>
             </div>
         </div>
-    
+        
+        <div class="row"><div class="span12"><hr></div></div>
+
+        <h2 style="margin-bottom: 36px;">Write, paste or drop text into the textareas</h2>
+
+
         <div class="row">
-                
-            <div class="span12 well">
-                <form class="form-horizontal" autocomplete="off" spellcheck="false">
-                    <fieldset>
-                    <legend>Write, paste or drop text into the textareas</legend>
-                    </fieldset>
-                    
-                    
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>No padding <small>3 rows</small></h4>
-                        </div>
-                        <div class="controls">
-                            <textarea placeholder="Write something here..." class="span3" data-autogrow rows="3"></textarea>
-                            <span class="help-inline"></span>
-                        </div>
-                        
-
-                    </div>
-
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Markup</h4>
-                        </div>
-                        <div class="controls">
+            <div class="span4">
+                <h4>Basic example</h4>
+                <textarea placeholder="Write something here..." class="span3" data-autogrow rows="3"></textarea>
+            </div>
+            <div class="span8">
+                <h4>Markup</h4>
 <pre class="prettyprint">
 &lt;textarea placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
 </pre>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        
+        <div class="row"><div class="span12"><hr></div></div>
 
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Heavy padding <small><br>3 rows</small></h4>
-                        </div>
-                        <div class="controls">
-                            <textarea placeholder="Write something here..." style="padding: 45px;" class="span3" data-autogrow rows="3"></textarea>
-                            <span class="help-inline"></span>
-                        </div>
-
-                    </div>
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Markup</h4>
-                        </div>
-                        <div class="controls">
+        <div class="row">
+            <div class="span4">
+                <h4>Heavy padding</h4>
+                <textarea placeholder="Write something here..." style="padding: 45px;" class="span3" data-autogrow rows="3"></textarea>
+            </div>
+            <div class="span8">
+                <h4>Markup</h4>
 <pre class="prettyprint">
 &lt;textarea style="padding: 45px;" placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
 </pre>
-                        </div>
-                    </div>
-
-
-
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Medium padding, with border <small><br>3 rows</small></h4>
-                        </div>
-                        <div class="controls">
-                            <textarea placeholder="Write something here..." style="padding: 20px; border: 5px solid black; box-sizing: border-box;" class="span3" data-autogrow rows="3"></textarea>
-                            <span class="help-inline"></span>
-                        </div>
-
-                    </div>
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Markup</h4>
-                        </div>
-                        <div class="controls">
-<pre class="prettyprint">
-&lt;textarea style="padding: 20px; border: 5px solid black;" placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
-</pre>
-                        </div>
-                    </div>
-                    
-                    
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Scrollbar <small>3 rows</small></h4>
-                        </div>
-                        <div class="controls">
-                            <textarea placeholder="Write something here..." class="span3 scroll" data-autogrow rows="3"></textarea>
-                            <span class="help-inline"></span>
-                        </div>
-                        
-
-                    </div>
-
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Markup</h4>
-                        </div>
-                        <div class="controls">
-<pre class="prettyprint">
-&lt;textarea placeholder="Write something here..." class="span3 scroll" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
-</pre>
-
-                        </div>
-                    </div>
-                    
-                    
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Initially hidden <small>3 rows</small></h4>
-                        </div>
-                        <div class="controls">
-                            <textarea style="display: none;" placeholder="Write something here..." class="span3" data-autogrow rows="3"></textarea>
-                            <span class="help-inline"><a onclick="$(this).closest('.controls').find('textarea').toggle(); $(this).text(this.text=='Show'?'Hide':'Show');return false;" href="#">Show</a></span>
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <div class="span2">
-                           <h4>Markup</h4>
-                        </div>
-                        <div class="controls">
-<pre class="prettyprint">
-&lt;textarea style="display: none;" placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
-</pre>
-                        </div>
-                    </div>
-                    
-                    
-                </form>
             </div>
         </div>
+        
+        <div class="row"><div class="span12"><hr></div></div>
 
+         <div class="row">
+             <div class="span4">
+                 <h4>Medium padding <small>, with border</small></h4>
+                <textarea placeholder="Write something here..." style="padding: 20px; border: 5px solid black; box-sizing: border-box;" class="span3" data-autogrow rows="3"></textarea>
+             </div>
+             <div class="span8">
+                 <h4>Markup</h4>
+ <pre class="prettyprint">
+&lt;textarea style="padding: 20px; border: 5px solid black;" placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
+ </pre>
+             </div>
+         </div>
+         
+        <div class="row"><div class="span12"><hr></div></div>
+                     
+         <div class="row">
+             <div class="span4">
+                 <h4>Scrollbar</h4>
+                <textarea placeholder="Write something here..." class="span3 scroll" data-autogrow rows="3"></textarea>
+             </div>
+             <div class="span8">
+                 <h4>Markup</h4>
+ <pre class="prettyprint">
+&lt;textarea placeholder="Write something here..." class="span3 scroll" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
+ </pre>
+             </div>
+         </div>
+         
+        <div class="row"><div class="span12"><hr></div></div>
+
+         <div class="row">
+             <div class="span4">
+                 <h4>Initially hidden</h4>
+                    <textarea style="display: none;" placeholder="Write something here..." class="span3" data-autogrow rows="3"></textarea>
+                    <a onclick="$(this).closest('.span4').find('textarea').toggle(); $(this).text(this.text=='Show'?'Hide':'Show');return false;" href="#">Show</a>             </div>
+             <div class="span8">
+                 <h4>Markup</h4>
+ <pre class="prettyprint">
+&lt;textarea style="display: none;" placeholder="Write something here..." class="span3" <span class="hilite">data-autogrow</span> rows="3"&gt;&lt;/textarea&gt;
+ </pre>
+             </div>
+         </div>
+         
+        <div class="row"><div class="span12"><hr></div></div> 
+ 
         <div class="row">
+
+            <div class="span4">
+                <h4>Base CSS</h4>
+                <p>The base css used.</p>
+            </div>
+            
+            <div class="span8">
                 
-            <div class="span12 well">
-                <h4>CSS <small>Bootstrap and </small></h4>
-<pre class="prettyprint">
+<pre class="prettyprint css">
 textarea {
     border: none;
     resize: none;
@@ -178,13 +136,10 @@ textarea {
 
 textarea.scroll {
     overflow-y: scroll;
-}
-</pre>
+}</pre>
             </div>
-            
-        </div>
 
-    </div>
-    
+        </div>
+   </div>    
  </body>
 </html>

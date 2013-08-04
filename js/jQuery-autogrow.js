@@ -1,3 +1,4 @@
+/* jshint -W014 */
 /**
  * @preserve Copyright (c) 2012 Petka Antonov
  *
@@ -21,26 +22,28 @@
  */
 (function(global, $) {
     "use strict";
-    
+
     //TODO Commits and IE
     //Require jQuery
     //document destroy event
     var INSTANCE_KEY = "autogrow-instance";
 
-    var clearTimeout = global.clearTimeout,    
-        className = "autogrow-measure-"+("" + Math.random()).replace(/[^0-9]/g, ""),        
-        slice = [].slice,        
+    var clearTimeout = global.clearTimeout,
+
+        className = "autogrow-measure-"+("" + Math.random())
+            .replace(/[^0-9]/g, ""),
+
+        slice = [].slice,
         setTimeout = global.setTimeout;
 
     var hook = (function(){
         function defineHook( hookKind, hookKey, fnType, fn ) {
             var hooks = $[hookKind],
                 hook = hooks[hookKey],
-                undef,
                 orig = null;
 
             if( hook ) {
-                orig = hook[fnType]; 
+                orig = hook[fnType];
             }
             else {
                 hook = hooks[hookKey] = {};
@@ -50,9 +53,9 @@
                 hook[fnType] = function( elem, value, name ) {
                     var ret;
                     if( orig ) {
-                        ret = orig( elem, value, name );    
+                        ret = orig( elem, value, name );
                     }
-                    
+
                     return fn( elem, value, name ) || ret;
                 };
             }
@@ -60,9 +63,9 @@
                 hook[fnType] = function( elem, name ) {
                     var retOrig, ret;
                     if( orig ) {
-                        retOrig = orig( elem, value );    
+                        retOrig = orig( elem, name );
                     }
-                    ret = fn( elem, value );
+                    ret = fn( elem, name );
                     return ret === null ? retOrig : ret;
                 };
             }
@@ -84,7 +87,7 @@
     var boxSizingProp = (function(){
         var props = ["boxSizing", "mozBoxSizing", "webkitBoxSizing"],
             divStyle = document.createElement("div").style;
-            
+
         for( var i = 0; i < props.length; ++i ) {
             if( props[i] in divStyle ) {
                 return props[i];
@@ -104,21 +107,24 @@
         webkitBoxSizing: "content-box",
         boxSizing: "content-box"
     };
-    
-    var fontProps = "fontWeight fontFamily fontStyle fontSize wordWrap lineHeight wordSpacing letterSpacing textIndent textTransform".split( " " );
-    
+
+    var fontProps = "fontWeight fontFamily fontStyle fontSize wordWrap " +
+        "lineHeight wordSpacing letterSpacing " +
+        "textIndent textTransform".split( " " );
+
     function makeMeasurementElement() {
-        return $("<textarea>", {tabIndex: -1}).css( measureBaseCss ).addClass( className );
+        return $("<textarea>", {tabIndex: -1})
+            .css( measureBaseCss ).addClass( className );
     }
-    
+
     function numericCss( $elem, key ) {
         return parseInt( $elem.css( key ), 10 ) || 0;
     }
-    
+
     function isBorderBox( $elem ) {
         return $elem.css( boxSizingProp ) === "border-box";
     }
-    
+
     function getWidth( $elem ) {
         if( isBorderBox( $elem ) ) {
             return numericCss( $elem, "width" );
@@ -135,7 +141,7 @@
             return $elem[0].offsetHeight ? $elem.height() : 0;
         }
     }
-        
+
     //Get the additional height for border-boxes
     function getAdditionalHeight( $elem ) {
         return numericCss( $elem, "paddingTop" ) +
@@ -143,29 +149,29 @@
                 numericCss( $elem, "borderTopWidth" ) +
                 numericCss( $elem, "borderBottomWidth" );
     }
- 
- 
+
+
     function debounce( fn, time, ctx ) {
         var timerId = 0;
         var ret = function() {
             clearTimeout( timerId );
             var self = ctx || this,
                 args = slice.call( arguments );
-                
+
             timerId = setTimeout( function() {
                 fn.apply( self, args );
             }, time );
         };
-        
+
         ret.cancel = function() {
             clearTimeout( timerId );
         };
         return ret;
     }
-       
+
     var Autogrow = (function() {
         var method = Autogrow.prototype;
-        
+
         function Autogrow( elem ) {
             this._elem = $(elem);
             this._measurement = makeMeasurementElement().appendTo( "body" );
@@ -173,9 +179,9 @@
             this._lastHeight = getHeight( this._elem );
             this._additionalHeight = 0;
 
-            
+
             this._refresh();
-            
+
             this._oninput = debounce( this._oninput, 13, this );
             this._elem.on(
                 "cut.autogrow input.autogrow paste.autogrow " +
@@ -183,12 +189,12 @@
                 "keypress.autogrow",
                 this._oninput
             );
-            
+
             this._elem.on( "destroy.autogrow", $.proxy( this.destroy, this ) );
         }
-        
+
         method._oninput = function() {
-            
+
             if( this._baseHeight <= 0 ) {
                 this._baseHeight = getHeight( this._elem );
                 if( isBorderBox( this._elem ) ) {
@@ -200,39 +206,43 @@
             }
             if( this._baseHeight > 0 ) {
                 var height = this._measureHeight(),
-                    maxHeight = Math.max( this._baseHeight, height ) + this._additionalHeight;
-                    
-                if( maxHeight !== this._lastHeight ) {             
+                    maxHeight = Math.max( this._baseHeight, height ) +
+                        this._additionalHeight;
+
+                if( maxHeight !== this._lastHeight ) {
                     this._lastHeight = maxHeight;
                     this._elem.css( "height", maxHeight );
                 }
             }
         };
-        
+
         method._measureHeight = function() {
             this._measurement
                 .css( "width", getWidth( this._elem ) )
-                .val(this._elem.val() + "\uff2d\uff2d\uff2d\uff2d")
+                .val(this._elem.val() + "\uff2d\uff2d\uff2d\uff2d");
 
             return this._measurement.prop( "scrollHeight" ) | 0;
         };
-        
+
 
 
         method._refresh = function() {
             for( var i = 0; i < fontProps.length; ++i ) {
-                this._measurement.css( fontProps[i], this._elem.css( fontProps[i] ) );
+                this._measurement.css(
+                    fontProps[i],
+                    this._elem.css( fontProps[i] )
+                );
             }
-            
+
             if( isBorderBox( this._elem ) ) {
                 this._additionalHeight = getAdditionalHeight( this._elem );
             }
             else {
                 this._additionalHeight = 0;
             }
-            
-            
-        };        
+
+
+        };
 
         method.destroy = function() {
             this._measurement.remove();
@@ -240,7 +250,7 @@
             this._elem.removeData( INSTANCE_KEY );
             this._elem.off( ".autogrow" );
         };
-        
+
         var setter = function( elem, value ) {
             var instance = $.data( elem, INSTANCE_KEY );
             if( !instance ) {
@@ -249,30 +259,37 @@
             elem.value = value;
             this._oninput();
             return true;
-        }
-        
+        };
+
         hook.define( hook.VAL, "textarea", hook.SETTER, setter );
-        
+
         return Autogrow;
     })();
-    
+
 
 
     $.fn.autogrow = function( option ) {
         return this.filter( "textarea" ).each( function() {
-            
+
             var $this = $( this ),
                 data = $this.data( INSTANCE_KEY );
-            
+
             if( $this.hasClass( className ) ) {
                 return;
             }
-            
+
             if( !data ) {
                 $this.data( INSTANCE_KEY, ( data = new Autogrow( this ) ) );
             }
-            if( typeof option == 'string' && option.charAt(0) !== "_" && data[option].apply ) {
-                data[option].apply( data, arguments.length > 1 ? [].slice.call( arguments, 1 ) : [] );
+            if( typeof option === "string" &&
+                option.charAt(0) !== "_" &&
+                data[option].apply ) {
+                data[option].apply(
+                    data,
+                        arguments.length > 1
+                        ? [].slice.call( arguments, 1 )
+                        : []
+                );
             }
         });
     };
@@ -280,14 +297,14 @@
 
 
     $.fn.autogrow.Constructor = Autogrow;
-    
+
     $.fn.autogrow.refresh = function() {
         $( "textarea[data-autogrow]" ).autogrow();
     };
-    
-    $( $.fn.autogrow.refresh );
-    
 
-    
-    
+    $( $.fn.autogrow.refresh );
+
+
+
+
 })(this, this.jQuery);
