@@ -37,7 +37,7 @@ The mere presence of the attribute `data-autogrow` is enough for it to be picked
 uninitialized `data-autogrow` inputs. It is automatically called once on DOM ready event which makes the data API work.
 
 
-See [the demo page](http://petkaantonov.github.io/jQuery-autogrow/) for better overview
+See [the demo page](http://petkaantonov.github.io/jQuery-autogrow/demo.html) for better overview
 
 Building
 ----------
