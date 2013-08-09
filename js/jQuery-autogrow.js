@@ -425,7 +425,4 @@
 
     $( $.fn.autogrow.refresh );
 
-
-
-
 })(this, this.jQuery);
