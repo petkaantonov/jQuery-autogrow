@@ -1,6 +1,8 @@
 module.exports = function( grunt ) {
 
-    var BUILD_DEST = './js/jQuery-autogrow.js',
+    var SRC_DEST = './src/jQuery-autogrow.js',
+        TMP_DEST = './js/tmp.js',
+        BUILD_DEST = './js/jQuery-autogrow.js',
         MIN_DEST = './js/jQuery-autogrow.min.js'
 
     var gruntConfig = {};
@@ -24,7 +26,7 @@ module.exports = function( grunt ) {
     gruntConfig["closure-compiler"] = {
         frontend: {
             closurePath: '../closure_compiler',
-            js: BUILD_DEST,
+            js: TMP_DEST,
             jsOutputFile: MIN_DEST,
             maxBuffer: 8192,
             options: {
@@ -41,4 +43,24 @@ module.exports = function( grunt ) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-closure-compiler');
 
+    grunt.registerTask( "build", function() {
+        var fs = require("fs");
+
+        var src = fs.readFileSync( SRC_DEST, "utf8" );
+
+        var devSrc = src.replace( /%_PRODUCTION/g, "false" );
+        var prodSrc = src.replace( /%_PRODUCTION/g, "true" );
+
+        fs.writeFileSync( BUILD_DEST, devSrc );
+        fs.writeFileSync( TMP_DEST, prodSrc );
+
+    });
+
+    grunt.registerTask( "clean", function() {
+        var fs = require("fs");
+        fs.unlink( TMP_DEST );
+
+    });
+
+    grunt.registerTask( "default", ["build", "jshint", "closure-compiler", "clean"] );
 };
