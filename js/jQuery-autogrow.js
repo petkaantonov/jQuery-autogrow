@@ -390,7 +390,8 @@
         return Autogrow;
     })();
 
-    $.fn.autogrow = function( option ) {
+    var plugin;
+    plugin = $.fn.autogrow = function( option ) {
         return this.filter( "textarea" ).each( function() {
 
             var $this = $( this ),
@@ -417,12 +418,16 @@
         });
     };
 
-    $.fn.autogrow.Constructor = Autogrow;
+    plugin.Constructor = Autogrow;
 
-    $.fn.autogrow.refresh = function() {
+    plugin.refresh = function() {
         $( "textarea[data-autogrow]" ).autogrow();
     };
 
-    $( $.fn.autogrow.refresh );
+    $( plugin.refresh );
+
+    $.ajaxPrefilter( function( o, oo, jqxhr ) {
+        (jqxhr.complete || jqxhr.always)( plugin.refresh );
+    });
 
 })(this, this.jQuery);
