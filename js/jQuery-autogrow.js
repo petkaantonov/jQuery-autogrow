@@ -390,8 +390,10 @@
         return Autogrow;
     })();
 
+    var old = $.fn.autogrow;
     var plugin;
     plugin = $.fn.autogrow = function( option ) {
+        var args = [].slice.call( arguments, 1 );
         return this.filter( "textarea" ).each( function() {
 
             var $this = $( this ),
@@ -408,17 +410,17 @@
             if( typeof option === "string" &&
                 option.charAt(0) !== "_" &&
                 typeof data[option] === "function" ) {
-                data[option].apply(
-                    data,
-                        arguments.length > 1
-                        ? [].slice.call( arguments, 1 )
-                        : []
-                );
+                data[option].apply( data, args );
             }
         });
     };
 
     plugin.Constructor = Autogrow;
+
+    plugin.noConflict = function() {
+        $.fn.autogrow = old;
+        return plugin;
+    };
 
     plugin.refresh = function() {
         $( "textarea[data-autogrow]" ).autogrow();
